@@ -1,0 +1,9 @@
+{
+    "actions": [
+        {
+            "id": "openReadmeFile",
+            "actionType": "FILE",
+            "uri": "file:///home/user/projects/flp_plugin/.gen/generation.log"
+        }
+    ]
+}

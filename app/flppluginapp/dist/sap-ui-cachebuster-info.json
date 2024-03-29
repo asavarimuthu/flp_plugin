@@ -1,0 +1,18 @@
+{
+  "controller/Main.controller.js": 1711670787801,
+  "i18n/i18n.properties": 1711413905473,
+  "model/models.js": 1711413905469,
+  "manifest.json": 1711683843017,
+  "controller/App.controller.js": 1711413905473,
+  "Component.js": 1711669335697,
+  "Component-preload.js": 1711683843382,
+  "Component-dbg.js": 1711669335697,
+  "controller/Main-dbg.controller.js": 1711670787801,
+  "controller/App-dbg.controller.js": 1711413905473,
+  "model/models-dbg.js": 1711413905469,
+  "view/fragments/Popover.fragment.xml": 1711481086948,
+  "view/Main.view.xml": 1711670206565,
+  "view/App.view.xml": 1711413905469,
+  "css/style.css": 1711413905469,
+  "index.html": 1711413905469
+}

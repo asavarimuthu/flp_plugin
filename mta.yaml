@@ -1,0 +1,146 @@
+_schema-version: "3.1"
+ID: flp_plugin
+description: A simple CAP project.
+version: 1.0.0
+modules:
+- name: flp_plugin-srv
+  type: nodejs
+  path: gen/srv
+  requires:
+  - name: flp_plugin-db
+  - name: uaa_flp_plugin
+  - name: servicemanager
+    parameters:
+      service-key: servicemanager-key
+  provides:
+  - name: srv-api
+    properties:
+      srv-url: ${default-url}
+  parameters:
+    buildpack: nodejs_buildpack
+  build-parameters:
+    builder: npm
+- name: flp_plugin-db-deployer
+  type: hdb
+  path: gen/db
+  requires:
+  - name: flp_plugin-db
+  parameters:
+    buildpack: nodejs_buildpack
+- name: flp_plugin-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: flp_plugin-destination-service
+    parameters:
+      content-target: true
+  - name: flp_plugin_html_repo_host
+    parameters:
+      service-key:
+        name: flp_plugin_html_repo_host-key
+  - name: uaa_flp_plugin
+    parameters:
+      service-key:
+        name: uaa_flp_plugin-key
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: flp_plugin_router_flp_plugin_html_repo_host
+          ServiceInstanceName: flp_plugin-html5-app-host-service
+          ServiceKeyName: flp_plugin_html_repo_host-key
+          sap.cloud.service: flp_plugin_router
+        - Authentication: OAuth2UserTokenExchange
+          Name: flp_plugin_router_uaa_flp_plugin
+          ServiceInstanceName: flp_plugin-xsuaa-service
+          ServiceKeyName: uaa_flp_plugin-key
+          sap.cloud.service: flp_plugin_router
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+- name: flp_plugin-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: flp_plugin_html_repo_host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - comsapflppluginapp.zip
+      name: comsapflppluginapp
+      target-path: resources/
+- name: comsapflppluginapp
+  type: html5
+  path: app/flppluginapp
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: servicemanager
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: service-manager
+    service-plan: subaccount-admin
+- name: flp_plugin-db
+  type: com.sap.xs.hdi-container
+  parameters:
+    service: hana
+    service-plan: hdi-shared
+- name: flp_plugin-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          - Authentication: NoAuthentication
+            HTML5.DynamicDestination: true
+            HTML5.ForwardAuthToken: true
+            Name: flp_plugin-srv-api
+            ProxyType: Internet
+            Type: HTTP
+            URL: ~{srv-api/srv-url}
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-name: flp_plugin-destination-service
+    service-plan: lite
+  requires:
+  - name: srv-api
+- name: flp_plugin_html_repo_host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: flp_plugin-html5-app-host-service
+    service-plan: app-host
+- name: uaa_flp_plugin
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      tenant-mode: dedicated
+      xsappname: flp_plugin-${org}-${space}
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: flp_plugin-xsuaa-service
+    service-plan: application
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+  - builder: custom
+    commands:
+    - npm ci
+    - npx cds build --production

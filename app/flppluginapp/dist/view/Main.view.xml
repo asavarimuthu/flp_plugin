@@ -1,0 +1,36 @@
+<mvc:View controllerName="com.sap.flppluginapp.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m" 	xmlns:f="sap.ui.layout.form">
+    <Page id="page" title="{i18n>title}">
+        <content>
+    	<f:SimpleForm id="SimpleFormDisplay354"
+			editable="false"
+			layout="ResponsiveGridLayout"
+			title="Address"
+			labelSpanXL="3"
+			labelSpanL="3"
+			labelSpanM="3"
+			labelSpanS="12"
+			adjustLabelSpan="false"
+			emptySpanXL="4"
+			emptySpanL="4"
+			emptySpanM="4"
+			emptySpanS="0"
+			columnsXL="1"
+			columnsL="1"
+			columnsM="1"
+			singleContainerFullSize="false" >
+			<f:content>
+				<Label text="Full Name" />
+				<Text id="nameText" text="{UserModel>/FullName}" />
+				<Label text="User Name" />
+				<Text text="{UserModel>/UserId}" />
+				<Label text="Date" />
+				<Text text="{UserModel>/Date}" />
+				<Label text="Sub Account" />
+				<Text id="countryText" text="{UserModel>/SubDomain}" />
+			</f:content>
+		</f:SimpleForm>
+        </content>
+    </Page>
+</mvc:View>

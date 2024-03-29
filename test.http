@@ -1,0 +1,6 @@
+######
+
+POST http://localhost:4004/odata/v4/getAccountDetails
+Content-Type: application/json
+
+{"subaccid":"f13218f3-7ff0-41ca-bde2-023c51b5f227"}
